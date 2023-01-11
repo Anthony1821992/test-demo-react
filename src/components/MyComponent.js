@@ -20,7 +20,7 @@ class MyComponent extends React.Component {
     //     this.setState({name: 'Andy',age: 25});
     // }
 
-    handleOnchangeInput = (event)=>{
+    handleOnChangeInput = (event)=>{
         this.setState({name: event.target.value});
     }
     
@@ -42,7 +42,7 @@ class MyComponent extends React.Component {
                 <form onSubmit={(event)=>{this.handleOnSubmit(event)}}>
                     <input 
                     type="text"
-                    onChange={(event)=>{this.handleOnchangeInput(event)}}>
+                    onChange={(event)=>{this.handleOnChangeInput(event)}}>
                     </input>
                     <button>
                         Submit
