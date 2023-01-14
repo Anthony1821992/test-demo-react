@@ -1,10 +1,20 @@
 import React from "react";
 
-class UserInfo extends React.Component {
+class AddUserInfo extends React.Component {
   state = {
-    name: "Anthony",
-    age: 30,
-    address: "USA",
+    name: "",
+    age: "",
+    email: "",
+  };
+
+  handleOnSubmit = (event) => {
+    event.preventDefault();
+    this.props.handleAddNewUser({
+      id: Math.floor(Math.random() * 100 + 1) + "random",
+      name: this.state.name,
+      age: this.state.age,
+      email: this.state.email,
+    });
   };
 
   handleOnChangeInput = (event) => {
@@ -14,6 +24,11 @@ class UserInfo extends React.Component {
   handleOnChangeAge = (event) => {
     this.setState({ age: event.target.value });
   };
+
+  handleOnChangeEMail = (event) => {
+    this.setState({ email: event.target.value });
+  };
+
   render() {
     return (
       <div>
@@ -33,6 +48,7 @@ class UserInfo extends React.Component {
         >
           <label>Your Name:</label>
           <input
+            placeholder="Enter your name"
             value={this.state.name}
             type="text"
             onChange={(event) => {
@@ -42,10 +58,21 @@ class UserInfo extends React.Component {
           <br />
           <label>Your Age:</label>
           <input
+            placeholder="Enter your age"
             value={this.state.age}
             type="text"
             onChange={(event) => {
               this.handleOnChangeAge(event);
+            }}
+          />
+          <br />
+          <label>Your Email:</label>
+          <input
+            placeholder="Enter your email"
+            value={this.state.email}
+            type="text"
+            onChange={(event) => {
+              this.handleOnChangeEMail(event);
             }}
           />
           <button>Submit</button>
@@ -54,4 +81,4 @@ class UserInfo extends React.Component {
     );
   }
 }
-export default UserInfo;
+export default AddUserInfo;
