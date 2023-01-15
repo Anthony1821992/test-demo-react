@@ -1,7 +1,7 @@
 // class component
 // function component
 
-import React from "react";
+import React, { useId, useImperativeHandle } from "react";
 import AddUserInfo from "./AddUserInfo";
 import DisplayInfo from "./DisplayInfo";
 class MyComponent extends React.Component {
@@ -9,6 +9,12 @@ class MyComponent extends React.Component {
     this.setState({
       listUsers: [userObj, ...this.state.listUsers],
     });
+  };
+  handleDeleteUsers = (userId) => {
+    let listUsersClone = [...this.state.listUsers];
+
+    listUsersClone = listUsersClone.filter((item) => item.id !== userId);
+    this.setState({ listUsers: listUsersClone });
   };
 
   state = {
@@ -25,7 +31,10 @@ class MyComponent extends React.Component {
         <AddUserInfo handleAddNewUser={this.handleAddNewUser}></AddUserInfo>
         <br />
         <br />
-        <DisplayInfo listUsers={this.state.listUsers} />
+        <DisplayInfo
+          listUsers={this.state.listUsers}
+          handleDeleteUsers={this.handleDeleteUsers}
+        />
       </>
     );
   }
