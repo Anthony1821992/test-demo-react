@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./DisplayInfo.scss";
 import logo from "./../logo.svg";
 
@@ -49,11 +49,23 @@ import logo from "./../logo.svg";
 // }
 const DisplayInfo = (props) => {
   const { listUsers } = props;
-  //Use Hooks here
   const [isShowHideListUser, setShowHideListUser] = useState(true);
   const handleShowHideListUser = () => {
     setShowHideListUser(!isShowHideListUser);
   };
+
+  // Truong hop [] empty thi useEffect chi goi duy nhat 1 lan cho du component co re-render lai bao nhieu lan
+  useEffect(() => {
+    setTimeout(() => {
+      document.title = "Hoi Dan It";
+    }, 3000);
+    console.log("Call me useEffect");
+  }, []);
+
+  // Truong hop [listUsers] thi useEffect se duoc goi lai de theo doi gia tri ma ta bo vao [] moi khi Component re-render lai.
+  useEffect(() => {
+    listUsers.length === 0 && alert("You deleted all users");
+  }, [listUsers]);
   return (
     <div className="display-info-container">
       <div>
