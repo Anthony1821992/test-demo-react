@@ -9,7 +9,6 @@ const Header = () => {
     <>
       <Navbar bg="light" expand="lg">
         <Container>
-          {/* <Navbar.Brand href="#home">Hoi Dan IT</Navbar.Brand> */}
           <NavLink to="/" className="navbar-brand">
             Hoi Dan IT
           </NavLink>
