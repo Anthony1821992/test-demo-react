@@ -22,7 +22,7 @@ const Admin = (props) => {
             />
           </div>
           <div className="admin-main">
-            <Outlet />{" "}
+            <Outlet />
           </div>
         </div>
       </div>
