@@ -3,11 +3,18 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
 
-const ModalCreateUser = (props) => {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+// Để chuyển từ <button> có sẵn của Modal React Bootstrap sang <button> mà chúng ta tạo trong file ManageUser.js thì
+// chúng ta phải chuyển cái state {show} lên thành state của thằng cha (ManageUser) quản lý và sẽ truyền trạng thái
+// đóng mở Modal xuống cho thằng con (ModalCreateUser)
+// Lý do mình phải chuyển State cho thằng cha nó kiểm soát bởi vì <button> mình tạo không nằm bên trong <ModalCreateUser/>
 
+// Xem tiếp giải thích bên ManageUser.js
+
+// Sau khi đã truyền props từ Cha vào thẻ Component Con, thì chúng ta sẽ khai: const ModalCreateUser = (props)
+// Dùng Destructuring Method: const { show, handleClose } = props;
+
+const ModalCreateUser = (props) => {
+  const { show, handleClose } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -30,9 +37,9 @@ const ModalCreateUser = (props) => {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      {/* <Button variant="primary" onClick={handleShow}>
         Add New User
-      </Button>
+      </Button> */}
       {/* backdrop = "static" - When backdrop is set to static, the modal will not close when clicking outside it */}
       <Modal
         show={show}
