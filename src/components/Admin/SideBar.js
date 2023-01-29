@@ -20,7 +20,7 @@ import {
 import sidebarBg from "../../assets/bg2.jpg";
 import { DiReact } from "react-icons/di";
 import { MdDashboard } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 const SideBar = (props) => {
   const { image, collapsed, rtl, toggled, handleToggleSidebar } = props;
 
@@ -48,7 +48,9 @@ const SideBar = (props) => {
             }}
           >
             <DiReact size={"3em"} color={"00bfff"} />
-            <span>AndyWooTr</span>
+            <NavLink to="/" className="navbar-brand">
+              AndyWooTr
+            </NavLink>
           </div>
         </SidebarHeader>
 

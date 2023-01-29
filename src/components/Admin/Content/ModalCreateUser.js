@@ -4,9 +4,16 @@ import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
 
 const ModalCreateUser = (props) => {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const { show, setShow } = props;
+  const handleClose = () => {
+    setShow(false);
+    setEmail("");
+    setPassword("");
+    setRole("USER");
+    setImage("");
+    setUsername("");
+    setPreviewImage("");
+  }; // Mỗi khi người dùng Close Modal thì sẽ setup lại tất cả trở về ban đầu.
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +37,9 @@ const ModalCreateUser = (props) => {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      {/* <Button variant="primary" onClick={handleShow}>
         Add New User
-      </Button>
+      </Button> */}
       {/* backdrop = "static" - When backdrop is set to static, the modal will not close when clicking outside it */}
       <Modal
         show={show}
