@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
+import axios from "axios";
+// Có 1 cách làm khác được lưu ở brach diy2, nói rõ cách làm sao để chuyển chức năng <button> có sẵn của
+// React-Bootstrap Modal sang 1 <button> ở Component Cha.
 
 const ModalCreateUser = (props) => {
   const { show, setShow } = props;
@@ -33,6 +36,36 @@ const ModalCreateUser = (props) => {
       setPreviewImage(URL.createObjectURL(event.target.files[0]));
       setImage(event.target.files[0]); //dùng setImage để cập nhật giá trị cho image để sử dụng cho backend
     }
+  };
+
+  const handleSubmitCreateUser = async () => {
+    // validate user
+    // call APIs: Có 2 cách:
+
+    // Nếu như không gửi File lên server thì ta có thể dùng cách này để truyền data dưới dạng Object
+    // let data = {
+    //   email: email,
+    //   password: password,
+    //   username: username,
+    //   role: role,
+    //   userImage: image,
+    // };
+
+    // Nếu như có gửi File lên server thì ta sẽ truyền data bằng Axios FormData theo Async/Await
+    const data = new FormData();
+    data.append("email", email); //("trường(field)", giá trị (value))
+    data.append("password", password);
+    data.append("username", username);
+    data.append("role ", role);
+    data.append("userImage", image); // ("file", file)
+
+    // Lấy link từ Postman/Participant/POST Participant/Body
+    // Sử dụng Await ở đây vì hành động này tốn nhiều thời gian
+    let res = await axios.post(
+      "http://localhost:8081/api/v1/participant",
+      data
+    );
+    console.log(res);
   };
 
   return (
@@ -96,7 +129,6 @@ const ModalCreateUser = (props) => {
             </div>
 
             <div className="col-md-12">
-              {" "}
               {/* 12 is a size of column = full size of <div> */}
               <label className="form-label label-upload" htmlFor="labelUpload">
                 {/* htmlFor will mapping with "id" of <input>. 
@@ -128,7 +160,7 @@ const ModalCreateUser = (props) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleSubmitCreateUser()}>
             Save
           </Button>
         </Modal.Footer>

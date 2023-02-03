@@ -10,19 +10,19 @@ import {
   SidebarContent,
 } from "react-pro-sidebar";
 import {
-  FaTachometerAlt,
   FaGem,
-  FaList,
   FaGithub,
-  FaRegLaughWink,
-  FaHeart,
+  // FaTachometerAlt,
+  // FaList,
+  // FaRegLaughWink,
+  // FaHeart,
 } from "react-icons/fa";
 import sidebarBg from "../../assets/bg2.jpg";
 import { DiReact } from "react-icons/di";
 import { MdDashboard } from "react-icons/md";
 import { Link, NavLink } from "react-router-dom";
 const SideBar = (props) => {
-  const { image, collapsed, rtl, toggled, handleToggleSidebar } = props;
+  const { collapsed, rtl, toggled, handleToggleSidebar } = props;
 
   return (
     <>

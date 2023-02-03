@@ -22,7 +22,7 @@ root.render(
           <Route path="/" element={<App />}>
             <Route index element={<HomePage />} />
             <Route path="users" element={<User />} />
-          </Route>{" "}
+          </Route>
           <Route path="/admin" element={<Admin />}>
             <Route index element={<DashBoard />} />
             <Route path="manage-users" element={<ManageUser />} />
