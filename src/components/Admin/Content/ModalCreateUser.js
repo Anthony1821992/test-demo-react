@@ -39,8 +39,9 @@ const ModalCreateUser = (props) => {
   };
 
   const handleSubmitCreateUser = async () => {
-    // validate user
-    // call APIs: Có 2 cách:
+    // 1. Validate user
+
+    // 2. Call APIs: Có 2 cách:
 
     // Nếu như không gửi File lên server thì ta có thể dùng cách này để truyền data dưới dạng Object
     // let data = {
