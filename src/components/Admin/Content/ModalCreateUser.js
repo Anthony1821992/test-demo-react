@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
 import axios from "axios";
+import { toast } from "react-toastify";
 // Có 1 cách làm khác được lưu ở brach diy2, nói rõ cách làm sao để chuyển chức năng <button> có sẵn của
 // React-Bootstrap Modal sang 1 <button> ở Component Cha.
 
@@ -37,9 +38,31 @@ const ModalCreateUser = (props) => {
       setImage(event.target.files[0]); //dùng setImage để cập nhật giá trị cho image để sử dụng cho backend
     }
   };
-
+  // Tạo hàm check email có hợp lệ hay không? (website: StackOverFlow)
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
   const handleSubmitCreateUser = async () => {
     // 1. Validate user
+    const isValidEmail = validateEmail(email);
+    console.log("check", isValidEmail);
+    // Tạo 1 biến có gía trị trả ra là True or False = hàm validateEmail(email) với tham số là email lấy từ người dùng nhập vào
+    if (!isValidEmail) {
+      // Hàm này chỉ chạy khi và chỉ khi tham số là True, vì vậy khi người dùng nhập sai Email giá trị trả ra là False, nên ta dùng phủ định !isValidEmail = True và khi đó nó sẽ chạy hàm này để báo lỗi. Sau khi nó báo lỗi xong nó sẽ gặp return; nên sẽ không chạy tiếp tới phần Call API được.
+      // Còn nếu người dùng nhập đúng, thì giá trị của !isValidEmail = False nên hàm này ko chạy mà nó sẽ chạy tiếp phần số 2. Call API
+      console.log("check", !isValidEmail);
+      toast.error("Invalid email");
+      return;
+    }
+    if (!password) {
+      // Check điều kiện có nhập password hay không?
+      toast.error("Enter password");
+      return;
+    }
 
     // 2. Call APIs: Có 2 cách:
 
@@ -67,6 +90,12 @@ const ModalCreateUser = (props) => {
       data
     );
     console.log(res);
+    if (res.data && res.data.EC === 0) {
+      toast.success(res.data.EM);
+      handleClose();
+    } else {
+      toast.error(res.data.EM);
+    }
   };
 
   return (
@@ -158,10 +187,10 @@ const ModalCreateUser = (props) => {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={() => handleClose()}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleSubmitCreateUser()}>
+          <Button variant="primary" onClick={() => handleSubmitCreateUser()}>
             Save
           </Button>
         </Modal.Footer>
