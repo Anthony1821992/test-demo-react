@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { postCreateNewUser } from "../../../services/APIService";
 // Có 1 cách làm khác được lưu ở brach diy2, nói rõ cách làm sao để chuyển chức năng <button> có sẵn của
 // React-Bootstrap Modal sang 1 <button> ở Component Cha.
 
@@ -64,31 +64,12 @@ const ModalCreateUser = (props) => {
       return;
     }
 
-    // 2. Call APIs: Có 2 cách:
+    // 2. Call APIs:
 
-    // Nếu như không gửi File lên server thì ta có thể dùng cách này để truyền data dưới dạng Object
-    // let data = {
-    //   email: email,
-    //   password: password,
-    //   username: username,
-    //   role: role,
-    //   userImage: image,
-    // };
+    // Nếu như có gửi File lên server thì ta sẽ truyền data bằng Axios FormData theo Async/Await (Move to Folder Services - Nơi chứa các hoạt động liên quan tới việc gọi API)
 
-    // Nếu như có gửi File lên server thì ta sẽ truyền data bằng Axios FormData theo Async/Await
-    const data = new FormData();
-    data.append("email", email); //("trường(field)", giá trị (value))
-    data.append("password", password);
-    data.append("username", username);
-    data.append("role ", role);
-    data.append("userImage", image); // ("file", file)
-
-    // Lấy link từ Postman/Participant/POST Participant/Body
     // Sử dụng Await ở đây vì hành động này tốn nhiều thời gian
-    let res = await axios.post(
-      "http://localhost:8081/api/v1/participant",
-      data
-    );
+    let res = await postCreateNewUser(email, password, username, role, image);
     console.log(res);
     if (res.data && res.data.EC === 0) {
       toast.success(res.data.EM);
