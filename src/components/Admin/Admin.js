@@ -3,8 +3,6 @@ import "./Admin.scss";
 import React, { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { Outlet } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const Admin = (props) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -40,18 +38,6 @@ const Admin = (props) => {
             bên trong thì sẽ hiển thị thêm chung phần SideBar và nút Toggle của Route Cha là Admin  */}
           </div>
         </div>
-        <ToastContainer // Dùng React-Toastify để chạy thông báo lỗi, thành công hay thông tin
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
       </div>
     </div>
   );

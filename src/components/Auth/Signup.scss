@@ -1,4 +1,4 @@
-.login-container {
+.signup-container {
   .header {
     height: 45px;
     text-align: right;
@@ -23,12 +23,12 @@
     padding: 20px 0;
     text-align: center;
   }
-  .welcome {
+  .content {
     font-size: 20px;
     padding: 10px 0;
     text-align: center;
   }
-  .content-form {
+  .form-group {
     display: flex;
     flex-direction: column;
     input {
