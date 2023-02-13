@@ -4,8 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { postCreateNewUser } from "../../../services/APIService";
-// Có 1 cách làm khác được lưu ở brach diy2, nói rõ cách làm sao để chuyển chức năng <button> có sẵn của
-// React-Bootstrap Modal sang 1 <button> ở Component Cha.
+// Có 1 cách làm khác được lưu ở brach diy2, nói rõ cách làm sao để chuyển chức năng <button> có sẵn của React-Bootstrap Modal sang 1 <button> ở Component Cha.
 
 const ModalCreateUser = (props) => {
   const { show, setShow } = props;
@@ -74,7 +73,9 @@ const ModalCreateUser = (props) => {
     if (data && data.EC === 0) {
       toast.success(data.EM);
       handleClose();
-      await props.fetchListUsers();
+      // await props.fetchListUsers();
+      await props.fetchListUsersWithPaginate(1);
+      props.setCurrentPage(1);
     } else {
       toast.error(data.EM);
     }
