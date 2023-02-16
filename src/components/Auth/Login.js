@@ -3,17 +3,42 @@ import "./Login.scss";
 import { useNavigate } from "react-router-dom";
 import { postLogin } from "../../services/APIService";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { doLogin } from "../../redux/action/userAction";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Tạo hàm check email có hợp lệ hay không? (website: StackOverFlow)
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleLogin = async () => {
     // Validate
-
+    const isValidEmail = validateEmail(email);
+    if (!isValidEmail) {
+      toast.error("Invalid email");
+      return;
+    }
+    if (!password) {
+      // Check điều kiện có nhập password hay không?
+      toast.error("Enter password");
+      return;
+    }
     //Submit APIs
     let data = await postLogin(email, password);
     if (data && data.EC === 0) {
+      //Khai báo dispatch + action
+      // dispatch({type: "FETCH_USER_LOGIN_SUCCESS", payload: data});
+      //action là cục object {} chứa type và payload => dispatch(action)
+
+      dispatch(doLogin(data));
       toast.success(data.EM);
       navigate("/");
     } else {
@@ -21,12 +46,15 @@ const Login = (props) => {
     }
   };
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
   return (
     <div className="login-container">
       <div className="header">
         <span>Don't have an account yet?</span>
-        <button>Sign up</button>
-        <span>Need help?</span>
+        <button onClick={() => navigate("/register")}>Sign up</button>
+        <span className="support-link">Need help?</span>
       </div>
       <div className="title col-4 mx-auto">Typeform</div>
       <div className="welcome col-4 mx-auto">Hello, who's this?</div>

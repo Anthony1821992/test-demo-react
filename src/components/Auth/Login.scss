@@ -6,6 +6,9 @@
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
+    padding: 0 50px;
+    margin-top: 5px;
+
     button {
       border: none;
       height: 40px;
@@ -16,6 +19,10 @@
         border: 1px solid;
         cursor: pointer;
       }
+    }
+
+    .support-link {
+      text-decoration: underline;
     }
   }
   .title {
