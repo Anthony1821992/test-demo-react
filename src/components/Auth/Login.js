@@ -5,6 +5,7 @@ import { postLogin } from "../../services/APIService";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { doLogin } from "../../redux/action/userAction";
+import { ImSpinner10 } from "react-icons/im";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -31,6 +32,7 @@ const Login = (props) => {
       toast.error("Enter password");
       return;
     }
+    setIsLoading(true);
     //Submit APIs
     let data = await postLogin(email, password);
     if (data && data.EC === 0) {
@@ -40,14 +42,18 @@ const Login = (props) => {
 
       dispatch(doLogin(data));
       toast.success(data.EM);
+      setIsLoading(false);
       navigate("/");
     } else {
       toast.error(data.EM);
+      setIsLoading(false);
     }
   };
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="login-container">
@@ -77,8 +83,13 @@ const Login = (props) => {
         </div>
         <span className="forgot-password">Forgot Password?</span>
         <div>
-          <button className="btn-submit" onClick={() => handleLogin()}>
-            Log in to Typeform
+          <button
+            className="btn-submit"
+            onClick={() => handleLogin()}
+            disabled={isLoading}
+          >
+            {isLoading === true && <ImSpinner10 className="loader-icon" />}
+            <span>Log in to Typeform</span>
           </button>
         </div>
         <div className="text-center">
