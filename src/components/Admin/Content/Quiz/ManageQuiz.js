@@ -1,6 +1,9 @@
 import "./ManageQuiz.scss";
 import Select from "react-select";
 import { useState } from "react";
+import { FcPlus } from "react-icons/fc";
+import { postCreateNewQuiz } from "../../../../services/APIService";
+import { toast } from "react-toastify";
 
 const ManageQuiz = (props) => {
   const options = [
@@ -11,9 +14,37 @@ const ManageQuiz = (props) => {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("Easy");
+  const [type, setType] = useState("");
   const [image, setImage] = useState(null);
-  const handleChangeFile = (event) => {};
+  const [previewImage, setPreviewImage] = useState("");
+  const handleChangeFile = (event) => {
+    // Tạo điều kiện khi và chỉ khi người dùng upload file thì chúng ta mới cập nhật tới biến này
+    if (event.target && event.target.files && event.target.files[0]) {
+      // Cách để preview hình ảnh trước khi upload, URL.createObjectURL(event.target.files[0])
+      setPreviewImage(URL.createObjectURL(event.target.files[0]));
+      setImage(event.target.files[0]); //dùng setImage để cập nhật giá trị cho image để sử dụng cho backend
+    }
+  };
+
+  const handleSubmitQuiz = async () => {
+    //validate
+    if (!name || !description) {
+      toast.error("Name/Description is required");
+      return;
+    }
+
+    let res = await postCreateNewQuiz(description, name, type?.value, image);
+    if (res && res.EC === 0) {
+      toast.success(res.EM);
+      setName("");
+      setDescription("");
+      setPreviewImage("");
+      setType(null);
+      setImage(null);
+    } else {
+      toast.error(res.EM);
+    }
+  };
 
   return (
     <div className="quiz-container">
@@ -44,19 +75,44 @@ const ManageQuiz = (props) => {
           </div>
           <div className="my-3">
             <Select
-              value={type}
-              onChange={(event) => setType(event.target.value)}
+              defaultValue={type}
+              onChange={setType}
               options={options}
+              placeholder={"Quiz type..."}
             />
           </div>
 
           <div className="more-actions form-group">
-            <label className="mb-1">Upload Image</label>
+            <label
+              className="form-label label-upload mb-1"
+              htmlFor="labelUpload"
+            >
+              <FcPlus />
+              Upload Image
+            </label>
             <input
               type="file"
+              id="labelUpload"
               className="form-control"
               onChange={(event) => handleChangeFile(event)}
+              hidden
             />
+          </div>
+          <div className="col-md-12 img-review">
+            {/* Tạo điều kiện nếu như người dùng không upload file ảnh gì thì sẽ mặc định hiển thị thẻ <span> */}
+            {previewImage ? (
+              <img src={previewImage} alt="" />
+            ) : (
+              <span>Preview Image</span>
+            )}
+          </div>
+          <div className="mt-3">
+            <button
+              onClick={() => handleSubmitQuiz()}
+              className="btn btn-warning"
+            >
+              Save
+            </button>
           </div>
         </fieldset>
       </div>

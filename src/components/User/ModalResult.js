@@ -8,6 +8,7 @@ const ModalResult = (props) => {
   const handleClose = () => setShow(false);
 
   const [isShowAnswer, setIsShowAnswer] = useState(false);
+  
 
   console.log(dataModalResult);
   return (

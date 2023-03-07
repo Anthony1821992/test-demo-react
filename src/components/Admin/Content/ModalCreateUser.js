@@ -144,7 +144,7 @@ const ModalCreateUser = (props) => {
             <div className="col-md-12">
               {/* 12 is a size of column = full size of <div> */}
               <label className="form-label label-upload" htmlFor="labelUpload">
-                {/* htmlFor will mapping with "id" of <input>. 
+                {/* htmlFor will connect with "id" of <input>. 
             It means instead of click on <input type = "file", we can click on <label>.
             They have the same function. 
             Therefore, we can hide the tag <input> by using hidden inside <input hidden/>for more prettier. */}
