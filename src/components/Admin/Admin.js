@@ -3,6 +3,7 @@ import "./Admin.scss";
 import React, { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { Outlet } from "react-router-dom";
+import PerfectScrollbar from "react-perfect-scrollbar";
 
 const Admin = (props) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,7 +23,10 @@ const Admin = (props) => {
             />
           </div>
           <div className="admin-main">
-            <Outlet />
+            <PerfectScrollbar>
+              <Outlet />
+            </PerfectScrollbar>
+
             {/* Trong file index.js ta có 2 Route Cha là: App và Admin.
             - Route App chứa 2 Route Con là HomePage và User.
             - Route Admin chứa 2 Route Con là DashBoard và ManageUser.

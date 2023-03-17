@@ -4,6 +4,8 @@ import { useState } from "react";
 import { FcPlus } from "react-icons/fc";
 import { postCreateNewQuiz } from "../../../../services/APIService";
 import { toast } from "react-toastify";
+import TableQuiz from "./TableQuiz";
+import Accordion from "react-bootstrap/Accordion";
 
 const ManageQuiz = (props) => {
   const options = [
@@ -48,75 +50,82 @@ const ManageQuiz = (props) => {
 
   return (
     <div className="quiz-container">
-      <div className="title">Manage Quizzes</div>
-      <hr />
-      <div className="add-new">
-        <fieldset className="border rounded-3 p-3">
-          <legend className="float-none w-auto px-3">Add New Quiz</legend>
-          <div className="form-floating mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="name@example.com"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-            <label>Name</label>
-          </div>
-          <div className="form-floating mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Password"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-            <label>Description</label>
-          </div>
-          <div className="my-3">
-            <Select
-              defaultValue={type}
-              onChange={setType}
-              options={options}
-              placeholder={"Quiz type..."}
-            />
-          </div>
+      <Accordion defaultActiveKey="0">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Manage Quizzes</Accordion.Header>
+          <Accordion.Body>
+            <div className="add-new">
+              <fieldset className="border rounded-3 p-3">
+                <legend className="float-none w-auto px-3">Add New Quiz</legend>
+                <div className="form-floating mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="name@example.com"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                  />
+                  <label>Name</label>
+                </div>
+                <div className="form-floating mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Password"
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                  />
+                  <label>Description</label>
+                </div>
+                <div className="my-3">
+                  <Select
+                    defaultValue={type}
+                    onChange={setType}
+                    options={options}
+                    placeholder={"Quiz type..."}
+                  />
+                </div>
 
-          <div className="more-actions form-group">
-            <label
-              className="form-label label-upload mb-1"
-              htmlFor="labelUpload"
-            >
-              <FcPlus />
-              Upload Image
-            </label>
-            <input
-              type="file"
-              id="labelUpload"
-              className="form-control"
-              onChange={(event) => handleChangeFile(event)}
-              hidden
-            />
-          </div>
-          <div className="col-md-12 img-review">
-            {/* Tạo điều kiện nếu như người dùng không upload file ảnh gì thì sẽ mặc định hiển thị thẻ <span> */}
-            {previewImage ? (
-              <img src={previewImage} alt="" />
-            ) : (
-              <span>Preview Image</span>
-            )}
-          </div>
-          <div className="mt-3">
-            <button
-              onClick={() => handleSubmitQuiz()}
-              className="btn btn-warning"
-            >
-              Save
-            </button>
-          </div>
-        </fieldset>
+                <div className="more-actions form-group">
+                  <label
+                    className="form-label label-upload mb-1"
+                    htmlFor="labelUpload"
+                  >
+                    <FcPlus />
+                    Upload Image
+                  </label>
+                  <input
+                    type="file"
+                    id="labelUpload"
+                    className="form-control"
+                    onChange={(event) => handleChangeFile(event)}
+                    hidden
+                  />
+                </div>
+                <div className="col-md-12 img-review">
+                  {/* Tạo điều kiện nếu như người dùng không upload file ảnh gì thì sẽ mặc định hiển thị thẻ <span> */}
+                  {previewImage ? (
+                    <img src={previewImage} alt="" />
+                  ) : (
+                    <span>Preview Image</span>
+                  )}
+                </div>
+                <div className="mt-3">
+                  <button
+                    onClick={() => handleSubmitQuiz()}
+                    className="btn btn-warning"
+                  >
+                    Save
+                  </button>
+                </div>
+              </fieldset>
+            </div>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+      <div className="list-detail">
+        <TableQuiz />
       </div>
-      <div className="list-detail">Table</div>
     </div>
   );
 };
