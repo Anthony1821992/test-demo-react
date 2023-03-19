@@ -1,22 +1,26 @@
 // Logic của phần này đó là khi chúng ta muốn thêm bớt câu hỏi hay thêm/ bớt câu trả lời thì chúng ta cần phải thao tác với mảng [], và trong mảng này chưa các objects {}. Và chúng ta sẽ thao tác với State của React thì mới có hiện tượng Re-render thì mới tạo được cảm giác cho người dùng
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import "./ManageQA.scss";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { RiImageAddFill } from "react-icons/ri";
 import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
-import _, { clone, findIndex } from "lodash"; //dùng để clone state của React, sau đó dùng hàm filter() để cập nhật lai state sau khi dựa vào id để remove object.
-import { NavItem } from "react-bootstrap";
+import _ from "lodash"; //dùng để clone state của React, sau đó dùng hàm filter() để cập nhật lai state sau khi dựa vào id để remove object.
+import Lightbox from "react-awesome-lightbox";
+import {
+  getAllQuizForAdmin,
+  postCreateNewQuestionForQuiz,
+  postCreateNewAnswerForQuestion,
+} from "../../../../services/APIService";
 
 const ManageQA = (props) => {
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
-  const [selectedQuiz, setSelectedQuiz] = useState({});
+  // const options = [
+  //   { value: "chocolate", label: "Chocolate" },
+  //   { value: "strawberry", label: "Strawberry" },
+  //   { value: "vanilla", label: "Vanilla" },
+  // ];
 
   // Tạo State cho Questions và Answers
   const [questions, setQuestions] = useState([
@@ -31,15 +35,39 @@ const ManageQA = (props) => {
           description: "",
           isCorrect: false,
         },
-        {
-          id: uuidv4(),
-          description: "",
-          isCorrect: false,
-        },
       ],
     },
   ]);
 
+  const [isPreviewImage, setIsPreviewImage] = useState(false);
+
+  const [dataImagePreview, setDataImagePreview] = useState({
+    title: "",
+    url: "",
+  });
+  console.log("check value", dataImagePreview);
+
+  const [listQuiz, setListQuiz] = useState([]);
+
+  const [selectedQuiz, setSelectedQuiz] = useState({});
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
+  const fetchQuiz = async () => {
+    let res = await getAllQuizForAdmin();
+    if (res && res.EC === 0) {
+      let newQuiz = res.DT.map((item) => {
+        return {
+          value: item.id,
+          label: `Quiz ${item.id} - ${item.description}`,
+        };
+      });
+      setListQuiz(newQuiz);
+    }
+    console.log("listQuiz", listQuiz);
+  };
   const handleAddRemoveQuestion = (type, id) => {
     if (type === "ADD") {
       const newQuestion = {
@@ -140,8 +168,40 @@ const ManageQA = (props) => {
     }
   };
 
-  const handleSubmitQuestionForQuiz = () => {
-    console.log("questions", questions);
+  const handleSubmitQuestionForQuiz = async () => {
+    // Submit question
+    await Promise.all(
+      questions.map(async (question) => {
+        const q = await postCreateNewQuestionForQuiz(
+          +selectedQuiz.value,
+          question.description,
+          question.imageFile
+        );
+
+        // Submit Answer
+        await Promise.all(
+          question.answers.map(async (answer) => {
+            await postCreateNewAnswerForQuestion(
+              answer.description,
+              answer.isCorrect,
+              q.DT.id
+            );
+          })
+        );
+      })
+    );
+  };
+
+  const handlePreviewImage = (questionId) => {
+    let cloneQuestion = _.cloneDeep(questions);
+    let index = cloneQuestion.findIndex((item) => item.id === questionId);
+    if (index > -1) {
+      setDataImagePreview({
+        url: URL.createObjectURL(cloneQuestion[index].imageFile),
+        title: cloneQuestion[index].imageName,
+      });
+      setIsPreviewImage(true);
+    }
   };
   return (
     <div className="questions-container">
@@ -153,7 +213,7 @@ const ManageQA = (props) => {
           <Select
             defaultValue={selectedQuiz}
             onChange={setSelectedQuiz}
-            options={options}
+            options={listQuiz}
           />
         </div>
         <div className="mt-3 mb-2"> Add Questions:</div>
@@ -183,7 +243,17 @@ const ManageQA = (props) => {
                       <RiImageAddFill className="icon-image" />
                     </label>
                     <span>
-                      {q.imageName ? q.imageName : "0 file is uploaded"}
+                      {q.imageName ? (
+                        // khi ta muốn làm onClick của 1 file nào đó ta cần bọc nó vào thẻ <span>
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handlePreviewImage(q.id)}
+                        >
+                          {q.imageName}
+                        </span>
+                      ) : (
+                        "0 file is uploaded"
+                      )}
                     </span>
                     <input
                       id={`${q.id}`}
@@ -278,7 +348,18 @@ const ManageQA = (props) => {
           </div>
         )}
       </div>
+      {isPreviewImage === true && (
+        <Lightbox
+          onClose={() => setIsPreviewImage(false)}
+          image={dataImagePreview.url}
+          title={dataImagePreview.title}
+        />
+      )}
     </div>
   );
 };
 export default ManageQA;
+
+// Note phần preview image dựa vào thư viện react-awesome-lightbox
+// Ban đầu dự định sẽ để phần preview image bên trong vòng lặp map() của question để ta có thể gán giá trị trực tiếp cho phần URL và phần image title mà không cần phải check questionID. Tuy nhiên việc nó render 1 lúc nhiều <Lightbox> khiến cho phần preview Image bị chồng chéo lên nhau nên xảy ra hiện tượng những image của các câu hỏi trước bị trùng lặp với các câu hỏi sau dù cho thông tin của ảnh của câu hỏi đó vẫn đúng. Đó là 1 bug của thư viện này.
+// Để khắc phục lỗi này ta sẽ không phụ thuộc vào vòng lặp nữa mà để nó độc lập. Khi này ta sẽ gán giá trị của URL và title trong <Lightbox> bằng 1 state là 1 object chứa 2 giá trị là URL và title. Lúc đó ta sẽ tạo 1 hàm onClick ở thẻ <span>, mỗi khi ta click vào thẻ <span> để xem preview image ta sẽ cập nhật lại state dựa vào questionId để biết ta muốn preview image của câu hỏi nào
