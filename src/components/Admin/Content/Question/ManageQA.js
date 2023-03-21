@@ -7,6 +7,7 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 import { RiImageAddFill } from "react-icons/ri";
 import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 import _ from "lodash"; //dùng để clone state của React, sau đó dùng hàm filter() để cập nhật lai state sau khi dựa vào id để remove object.
 import Lightbox from "react-awesome-lightbox";
 import {
@@ -16,14 +17,8 @@ import {
 } from "../../../../services/APIService";
 
 const ManageQA = (props) => {
-  // const options = [
-  //   { value: "chocolate", label: "Chocolate" },
-  //   { value: "strawberry", label: "Strawberry" },
-  //   { value: "vanilla", label: "Vanilla" },
-  // ];
-
   // Tạo State cho Questions và Answers
-  const [questions, setQuestions] = useState([
+  const initialQuestion = [
     {
       id: uuidv4(),
       description: "",
@@ -37,7 +32,8 @@ const ManageQA = (props) => {
         },
       ],
     },
-  ]);
+  ];
+  const [questions, setQuestions] = useState(initialQuestion);
 
   const [isPreviewImage, setIsPreviewImage] = useState(false);
 
@@ -169,27 +165,70 @@ const ManageQA = (props) => {
   };
 
   const handleSubmitQuestionForQuiz = async () => {
-    // Submit question
-    await Promise.all(
-      questions.map(async (question) => {
-        const q = await postCreateNewQuestionForQuiz(
-          +selectedQuiz.value,
-          question.description,
-          question.imageFile
-        );
+    // Validate data:
+    // 1. Validate select Quiz: nếu không chọn quiz thì sẽ không cho Submit và báo lỗi
+    if (_.isEmpty(selectedQuiz)) {
+      toast.error("Please choose a Quiz");
+      return;
+    }
 
-        // Submit Answer
-        await Promise.all(
-          question.answers.map(async (answer) => {
-            await postCreateNewAnswerForQuestion(
-              answer.description,
-              answer.isCorrect,
-              q.DT.id
-            );
-          })
+    // 2. Validate Answer: không được để trống phần trả lời (nếu muốn tăng độ khó thì làm thêm phần check phải có ít nhất 1 câu trả lời được tick vào ô check box). Ở đây cách đơn giản nhất là ta sẽ dùng vòng lặp for để hạy từng câu hỏi, và cứ mỗi câu hỏi ta sẽ chạy từng câu trả lời. khi nào nó gặp phải điều kiện mà ta code thì ngay lặp tức nó sẽ dừng lại (break)
+
+    let isValidAnswer = true;
+    let indexQ = 0;
+    let indexA = 0;
+    for (let i = 0; i < questions.length; i++) {
+      for (let j = 0; j < questions[i].answers.length; j++) {
+        if (!questions[i].answers[j].description) {
+          isValidAnswer = false;
+          indexA = j + 1; // để biết xem là bị câu trả lời nào
+          break;
+        }
+      }
+      if (isValidAnswer === false) {
+        indexQ = i + 1; // để biết xem bị ở câu hỏi nào
+        toast.error(`Empty Answer ${indexA} of Question ${indexQ}`);
+        break;
+      }
+    }
+    if (isValidAnswer === false) {
+      return;
+    }
+
+    // 3. Tương tự như phần câu trả lời
+    let isValidQuestion = true;
+    let indexQuestion = 0;
+    for (let i = 0; i < questions.length; i++) {
+      if (!questions[i].description) {
+        isValidQuestion = false;
+        indexQuestion = i + 1;
+        toast.error(`Empty Question ${indexQuestion}'s Description`);
+        break;
+      }
+    }
+    if (isValidQuestion === false) {
+      return;
+    }
+
+    // Submit question
+    for (const question of questions) {
+      const q = await postCreateNewQuestionForQuiz(
+        +selectedQuiz.value,
+        question.description,
+        question.imageFile
+      );
+      // Submit Answer
+      for (const answer of question.answers) {
+        await postCreateNewAnswerForQuestion(
+          answer.description,
+          answer.isCorrect,
+          q.DT.id
         );
-      })
-    );
+      }
+    }
+
+    toast.success(`Created Question and Answer successfully`);
+    setQuestions(initialQuestion);
   };
 
   const handlePreviewImage = (questionId) => {
