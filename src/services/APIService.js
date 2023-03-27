@@ -110,6 +110,18 @@ const postCreateNewAnswerForQuestion = (
   });
 };
 
+const postAssignQuiz = (quizId, userId) => {
+  return axios.post("api/v1/quiz-assign-to-user", { quizId, userId });
+};
+
+const getQuizWithQA = (quizId) => {
+  return axios.get(`api/v1/quiz-with-qa/${quizId}`);
+};
+
+const postUpsertQA = (data) => {
+  return axios.post("api/v1/quiz-upsert-qa", { ...data });
+};
+
 export {
   postCreateNewUser,
   getAllUser,
@@ -127,6 +139,9 @@ export {
   putEditQuiz,
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
+  postAssignQuiz,
+  getQuizWithQA,
+  postUpsertQA,
 }; // Export dưới dạng Object để có thể export được nhiều biến để sử dụng được nhiều nơi, còn export default chỉ xuất ra có 1 biến mà thôi
 
 // Giải thích cho việc tại sao chúng ta có thể import axios ở 1 file mà nó chỉ export ra biến instance: Là vì chúng ta dùng export default nên chỉ xuất ra duy nhất có 1 biến là instance thôi mà biến này có dùng tới thằng axios được import từ thư viện axios, nên khi chúng ta import dưới tên axios tại file này thì nó sẽ tự động hiểu chúng ta muốn dùng tới axios của file này. Như vậy chúng ta sẽ không cần thay đổi tên thành instance.post() mà có thể dùng axios.post() nó sẽ giống với cú pháp call API hơn.

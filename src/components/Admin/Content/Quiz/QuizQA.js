@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Select from "react-select";
-import "./ManageQA.scss";
+import "./QuizQA.scss";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { RiImageAddFill } from "react-icons/ri";
 import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
@@ -12,11 +12,11 @@ import _ from "lodash"; //dùng để clone state của React, sau đó dùng h�
 import Lightbox from "react-awesome-lightbox";
 import {
   getAllQuizForAdmin,
-  postCreateNewQuestionForQuiz,
-  postCreateNewAnswerForQuestion,
+  postUpsertQA,
+  getQuizWithQA,
 } from "../../../../services/APIService";
 
-const ManageQA = (props) => {
+const QuizQA = (props) => {
   // Tạo State cho Questions và Answers
   const initialQuestion = [
     {
@@ -50,6 +50,54 @@ const ManageQA = (props) => {
   useEffect(() => {
     fetchQuiz();
   }, []);
+
+  useEffect(() => {
+    if (selectedQuiz && selectedQuiz.value) {
+      fetchQuizWithQA();
+    }
+  }, [selectedQuiz]);
+
+  //return a promise that resolves with a File instance
+  function urltoFile(url, filename, mimeType) {
+    return fetch(url)
+      .then(function (res) {
+        return res.arrayBuffer();
+      })
+      .then(function (buf) {
+        return new File([buf], filename, { type: mimeType });
+      });
+  }
+
+  //Usage example:
+  urltoFile(
+    "data:text/plain;base64,aGVsbG8gd29ybGQ=",
+    "hello.txt",
+    "text/plain"
+  ).then(function (file) {
+    console.log(file);
+  });
+
+  const fetchQuizWithQA = async () => {
+    let res = await getQuizWithQA(selectedQuiz.value);
+    if (res && res.EC === 0) {
+      // convert base64 to File object
+      let newQA = [];
+      for (let i = 0; i < res.DT.qa.length; i++) {
+        let q = res.DT.qa[i];
+        if (q.imageFile) {
+          q.imageName = `Question - ${q.id}.png`;
+          q.imageFile = await urltoFile(
+            `data:image/png;base64,${q.imageFile}`,
+            `Question - ${q.id}.png`,
+            "image/png"
+          );
+        }
+        newQA.push(q);
+      }
+
+      setQuestions(newQA);
+    }
+  };
 
   const fetchQuiz = async () => {
     let res = await getAllQuizForAdmin();
@@ -212,24 +260,26 @@ const ManageQA = (props) => {
     // 4. Thử thách dành cho bạn, đó là sẽ chuyển ô description của câu hỏi hoặc câu trả lời thành màu đỏ nếu như để trống (cuối video 99 có gợi ý)
 
     // Submit question
-    for (const question of questions) {
-      const q = await postCreateNewQuestionForQuiz(
-        +selectedQuiz.value,
-        question.description,
-        question.imageFile
-      );
-      // Submit Answer
-      for (const answer of question.answers) {
-        await postCreateNewAnswerForQuestion(
-          answer.description,
-          answer.isCorrect,
-          q.DT.id
-        );
+    let questionClone = _.cloneDeep(questions);
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    for (let i = 0; i < questionClone.length; i++) {
+      if (questionClone[i].imageFile) {
+        questionClone[i].imageFile = await toBase64(questionClone[i].imageFile);
       }
     }
-
-    toast.success(`Created Question and Answer successfully`);
-    setQuestions(initialQuestion);
+    let res = await postUpsertQA({
+      quizId: selectedQuiz.value,
+      questions: questionClone,
+    });
+    console.log(">>>check res", res);
+    // toast.success(`Created Question and Answer successfully`);
+    // setQuestions(initialQuestion);
   };
 
   const handlePreviewImage = (questionId) => {
@@ -245,8 +295,6 @@ const ManageQA = (props) => {
   };
   return (
     <div className="questions-container">
-      <div className="title">Manage Questions</div>
-      <hr />
       <div className="add-new-question">
         <div className="col-6 form-group">
           <label className="mb-2">Select Quiz</label>
@@ -398,7 +446,7 @@ const ManageQA = (props) => {
     </div>
   );
 };
-export default ManageQA;
+export default QuizQA;
 
 // Note phần preview image dựa vào thư viện react-awesome-lightbox
 // Ban đầu dự định sẽ để phần preview image bên trong vòng lặp map() của question để ta có thể gán giá trị trực tiếp cho phần URL và phần image title mà không cần phải check questionID. Tuy nhiên việc nó render 1 lúc nhiều <Lightbox> khiến cho phần preview Image bị chồng chéo lên nhau nên xảy ra hiện tượng những image của các câu hỏi trước bị trùng lặp với các câu hỏi sau dù cho thông tin của ảnh của câu hỏi đó vẫn đúng. Đó là 1 bug của thư viện này.
