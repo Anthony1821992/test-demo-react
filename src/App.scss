@@ -40,6 +40,10 @@ body {
         background-color: rgb(93, 88, 88);
       }
     }
+    .btn-setting {
+      display: flex;
+      align-items: center;
+    }
     .navbar {
       padding-top: 20px;
       z-index: 10;
@@ -97,4 +101,10 @@ video {
 }
 .app-content {
   height: calc(100vh - 60px);
+}
+
+.languages {
+  .dropdown-toggle::after {
+    display: none !important;
+  }
 }

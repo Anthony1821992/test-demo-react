@@ -1,8 +1,11 @@
 import _ from "lodash";
 import { useState } from "react";
+import Lightbox from "react-awesome-lightbox";
 
 const Question = (props) => {
   const [choices, setChoices] = useState([]);
+
+  const [isPreviewImage, setIsPreviewImage] = useState(false);
 
   const { dataQuiz, index } = props;
   if (_.isEmpty(dataQuiz)) {
@@ -12,8 +15,8 @@ const Question = (props) => {
 
   const handleCheckboxChange = (e, a) => {
     const value = e.target.value;
-    console.log("check value", value, e.target.checked);
-    console.log("check value isSelected", a);
+    // console.log("check value", value, e.target.checked);
+    // console.log("check value isSelected", a);
 
     if (e.target.checked) {
       setChoices([...choices, value]);
@@ -23,17 +26,29 @@ const Question = (props) => {
       a.isSelected = false;
     }
   };
-  console.log("check choices", choices);
+  // console.log("check choices", choices);
 
   return (
     <>
       {dataQuiz.image ? (
         <div className="question-image">
-          <img src={`data:image/png;base64,${dataQuiz.image}`}></img>
+          <img
+            style={{ cursor: "pointer" }}
+            onClick={() => setIsPreviewImage(true)}
+            src={`data:image/png;base64,${dataQuiz.image}`}
+          ></img>
+          {isPreviewImage === true && (
+            <Lightbox
+              onClose={() => setIsPreviewImage(false)}
+              image={`data:image/png;base64,${dataQuiz.image}`}
+              title={"Question Image"}
+            />
+          )}
         </div>
       ) : (
         <div className="question-image"></div>
       )}
+
       <div className="question">
         Question {index + 1}: {dataQuiz.questionDescription}
       </div>
@@ -41,7 +56,7 @@ const Question = (props) => {
         {dataQuiz.answers &&
           dataQuiz.answers.length > 0 &&
           dataQuiz.answers.map((a, index) => {
-            console.log("check a value", a, "check index", index);
+            // console.log("check a value", a, "check index", index);
             return (
               <div key={`answer-${index}`} className="answer-child">
                 <div className="form-check">

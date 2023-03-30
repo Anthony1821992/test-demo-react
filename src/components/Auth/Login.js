@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { doLogin } from "../../redux/action/userAction";
 import { ImSpinner10 } from "react-icons/im";
+import Language from "../Header/Language";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -55,12 +56,21 @@ const Login = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleKeyDown = (event) => {
+    console.log("event keydown: ", event.key);
+    // Khác với event.target.value, event.key không có nối chuỗi mà nó chỉ hiện duy nhất đúng kí tự bàn phím mà bạn vừa mới ấn. Ví dụ: khi nhấn abc thì event.target.value sẽ hiện thị abc trong khi event.key sẽ hiện c vì chữ c là phím cuối cùng bạn vừa mới nhấn.
+    if (event && event.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="header">
         <span>Don't have an account yet?</span>
         <button onClick={() => navigate("/register")}>Sign up</button>
         <span className="support-link">Need help?</span>
+        <Language />
       </div>
       <div className="title col-4 mx-auto">Typeform</div>
       <div className="welcome col-4 mx-auto">Hello, who's this?</div>
@@ -79,6 +89,8 @@ const Login = (props) => {
             className="form-control"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            // Bắt sự kiện sau khi nhập password xong ta sẽ Submit = việc ấn Enter thì ta phải làm ở ô input của Password => dùng hàm onKeyDown
+            onKeyDown={(event) => handleKeyDown(event)}
           />
         </div>
         <span className="forgot-password">Forgot Password?</span>

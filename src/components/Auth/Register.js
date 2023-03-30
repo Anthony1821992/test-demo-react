@@ -4,6 +4,7 @@ import { postRegister } from "../../services/APIService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
+import Language from "../Header/Language";
 
 const Register = (props) => {
   const [email, setEmail] = useState("");
@@ -54,6 +55,7 @@ const Register = (props) => {
       <div className="header">
         <span>Already have an account?</span>
         <button onClick={() => navigate("/login")}>Log in</button>
+        <Language />
       </div>
       <div className="title col-3 mx-auto">Typeform</div>
       <div className="content col-3 mx-auto">
